@@ -6,30 +6,6 @@ main().catch((error) => {
   process.exit(1);
 });
 
-async function findElementByText(page, text, timeout = 200) {
-  let tries = 0;
-  let element;
-  while (tries * 10 < timeout) {
-    tries++;
-    [element] = await page.$x(
-      `//div[@id='app-container']//*[text()='${text}'][1]`
-    );
-    if (element) {
-      return element;
-    }
-    await sleep(10);
-  }
-  return null;
-}
-
-async function clickByText(page, text, timeout = 200) {
-  const element = await findElementByText(page, text, timeout);
-  if (!element) {
-    throw new Error(`Element with text "${text}" not found`);
-  }
-  return await element.click();
-}
-
 async function main() {
   const browser = await puppeteer.connect({
     browserWSEndpoint:
@@ -72,4 +48,28 @@ async function main() {
 
 function sleep(timeout) {
   return new Promise((resolve) => setTimeout(resolve, timeout));
+}
+
+async function findElementByText(page, text, timeout = 200) {
+  let tries = 0;
+  let element;
+  while (tries * 10 < timeout) {
+    tries++;
+    [element] = await page.$x(
+      `//div[@id='app-container']//*[text()='${text}'][1]`
+    );
+    if (element) {
+      return element;
+    }
+    await sleep(10);
+  }
+  return null;
+}
+
+async function clickByText(page, text, timeout = 200) {
+  const element = await findElementByText(page, text, timeout);
+  if (!element) {
+    throw new Error(`Element with text "${text}" not found`);
+  }
+  return await element.click();
 }
