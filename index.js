@@ -1,15 +1,31 @@
 import puppeteer from "puppeteer";
 import locations from "./locations.json" assert { type: "json" };
+import { spawn } from "child_process";
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
+// regex for DevTools listening on ws://127.0.0.1:9222/devtools/browser/64e21d33-4771-4a66-9053-426b594253ce
+const REGEX = /DevTools listening on (ws:\/\/.*)/;
+
+const chromeProcess = spawn(
+  "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222",
+  {
+    shell: true,
+  }
+);
+
+chromeProcess.stderr.on("data", (data) => {
+  console.log(data.toString());
+  const match = REGEX.exec(data.toString());
+  if (match) {
+    main(match[1]).catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+  }
 });
 
-async function main() {
+async function main(address) {
   const browser = await puppeteer.connect({
-    browserWSEndpoint:
-      "ws://127.0.0.1:9222/devtools/browser/36f9d17d-4764-4945-8885-8153a09130d8",
+    browserWSEndpoint: address,
   });
   const page = await browser.newPage();
   const total = Object.keys(locations).length;

@@ -2,8 +2,6 @@
 
 Fill Google Maps lists with data using browser automation.
 
-Start by starting Chrome: `yarn run start-chrome`
+Make sure Chrome is closed before starting!
 
-Adjust the Chrome address in index.js and then:
-
-Then, run the script: `yarn run start`
+Run the tool with `yarn start`
